@@ -1,0 +1,9 @@
+# CMake build files
+build/
+
+# Compiled object files
+*.o
+*.out
+
+# Executables
+codeguard
