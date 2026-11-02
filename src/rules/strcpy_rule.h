@@ -3,10 +3,12 @@
 
 #include "rule.h"
 
-class StrcpyRule : public Rule {
+class StrcpyRule : public Rule
+{
 public:
-    void check(const string& line, int lineNumber,
-               const string& filePath) override;
+    vector<Finding> check(
+        const vector<Token> &tokens,
+        const string &filePath) override;
 };
 
 #endif

@@ -10,4 +10,6 @@ add_executable(codeguard
     src/scanner/scanner.cpp
     src/analyzer/analyzer.cpp
     src/rules/strcpy_rule.cpp
+    src/rules/gets_rule.cpp
+    src/lexer/lexer.cpp
 )

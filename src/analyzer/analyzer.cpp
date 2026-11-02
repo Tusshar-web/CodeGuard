@@ -1,25 +1,29 @@
 #include "analyzer.h"
 #include <iostream>
-#include <fstream>
 
 using namespace std;
 
-void analyzeFile(const string& filePath, const vector<Rule*>& rules) {
-    ifstream file(filePath);
+vector<Finding> analyzeFile(
+    const string& filePath,
+    const vector<Rule*>& rules
+) {
+    vector<Finding> findings;
 
-    if (!file.is_open()) {
-        cerr << "Could not open file: " << filePath << '\n';
-        return;
+    // Convert source code into tokens
+    vector<Token> tokens = tokenizeFile(filePath);
+
+    // Run every security rule on the tokens
+    for (Rule* rule : rules) {
+
+        vector<Finding> currentFindings =
+            rule->check(tokens, filePath);
+
+        findings.insert(
+            findings.end(),
+            currentFindings.begin(),
+            currentFindings.end()
+        );
     }
 
-    string line;
-    int lineNumber = 0;
-
-    while (getline(file, line)) {
-        lineNumber++;
-
-        for (Rule* rule : rules) {
-            rule->check(line, lineNumber, filePath);
-        }
-    }
+    return findings;
 }

@@ -3,10 +3,15 @@
 
 #include <string>
 #include <vector>
+
 #include "../rules/rule.h"
+#include "finding.h"
 
 using namespace std;
 
-void analyzeFile(const string& filePath, const vector<Rule*>& rules);
+vector<Finding> analyzeFile(
+    const string& filePath,
+    const vector<Rule*>& rules
+);
 
 #endif

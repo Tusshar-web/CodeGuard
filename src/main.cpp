@@ -3,6 +3,7 @@
 #include "scanner/scanner.h"
 #include "analyzer/analyzer.h"
 #include "rules/strcpy_rule.h"
+#include "rules/gets_rule.h"
 
 using namespace std;
 
@@ -15,19 +16,40 @@ int main() {
     vector<string> files = scanDirectory(path);
 
     StrcpyRule strcpyRule;
+    GetsRule getsRule;
 
     vector<Rule*> rules = {
-        &strcpyRule
+        &strcpyRule,
+        &getsRule
     };
+
+    vector<Finding> allFindings;
 
     cout << "\nScanning started...\n";
 
     for (const auto& file : files) {
-        analyzeFile(file, rules);
+        vector<Finding> findings = analyzeFile(file, rules);
+
+        allFindings.insert(
+            allFindings.end(),
+            findings.begin(),
+            findings.end()
+        );
     }
 
-    cout << "\nScan completed!\n";
-    cout << "Total files scanned: " << files.size() << '\n';
+    cout << "\n========== CODEGUARD REPORT ==========\n";
+
+    for (const auto& finding : allFindings) {
+        cout << "\n[" << finding.severity << "] "
+             << finding.ruleName << '\n';
+
+        cout << "File: " << finding.filePath << '\n';
+        cout << "Line: " << finding.lineNumber << '\n';
+        cout << "Message: " << finding.message << '\n';
+    }
+
+    cout << "\nTotal files scanned: " << files.size() << '\n';
+    cout << "Total findings: " << allFindings.size() << '\n';
 
     return 0;
 }
