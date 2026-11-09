@@ -7,3 +7,11 @@ build/
 
 # Executables
 codeguard
+
+# IDE & Editor files
+.vscode/
+
+# Scan report outputs
+report.json
+security-report.json
+*.jsonl

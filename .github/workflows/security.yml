@@ -1,0 +1,45 @@
+name: CodeGuard Security Scan
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build clang llvm libclang-dev llvm-dev libgtest-dev
+
+      - name: Configure CMake
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build CodeGuard
+        run: |
+          cmake --build build -j$(nproc)
+
+      - name: Run Automated Tests
+        run: |
+          ctest --test-dir build --output-on-failure
+
+      - name: Run CodeGuard Security Scanner
+        run: |
+          ./build/codeguard examples/ --format json --output security-report.json || true
+          ./build/codeguard examples/ || true
+
+      - name: Upload Security Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-report
+          path: security-report.json
+          if-no-files-found: warn
+

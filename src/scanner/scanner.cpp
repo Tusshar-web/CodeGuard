@@ -8,16 +8,34 @@ namespace fs = filesystem;
 vector<string> scanDirectory(const string& path) {
     vector<string> files;
 
-    for (const auto& entry : fs::recursive_directory_iterator(path)) {
-        if (entry.is_regular_file()) {
-            string extension = entry.path().extension().string();
+for (auto it = fs::recursive_directory_iterator(
+         path, fs::directory_options::skip_permission_denied);
+     it != fs::recursive_directory_iterator();
+     ++it) {
 
-            if (extension == ".cpp" || extension == ".c" ||
-                extension == ".h" || extension == ".hpp") {
-                files.push_back(entry.path().string());
-            }
+    if (it->is_directory()) {
+        string dirname = it->path().filename().string();
+
+        if (dirname == "build" ||
+            dirname == ".git" ||
+            dirname == ".vscode") {
+
+            it.disable_recursion_pending();
+            continue;
         }
     }
+
+    if (it->is_regular_file()) {
+        string extension = it->path().extension().string();
+
+        if (extension == ".cpp" ||
+            extension == ".cc" ||
+            extension == ".cxx") {
+
+            files.push_back(it->path().string());
+        }
+    }
+}
 
     return files;
 }
